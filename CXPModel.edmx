@@ -1,0 +1,296 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="SCXPRAUDOModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="CHEQUES">
+          <Key>
+            <PropertyRef Name="NUMERO_CHEQUE" />
+          </Key>
+          <Property Name="NUMERO_CHEQUE" Type="int" Nullable="false" />
+          <Property Name="NUMERO_FACTURA" Type="int" Nullable="false" />
+          <Property Name="VALOR_CHEQUE" Type="money" />
+          <Property Name="FECHA_CHEQUE" Type="datetime" />
+        </EntityType>
+        <EntityType Name="FACTURAS">
+          <Key>
+            <PropertyRef Name="NUMERO_FACTURA" />
+          </Key>
+          <Property Name="NUMERO_FACTURA" Type="int" Nullable="false" />
+          <Property Name="CODIGO" Type="varchar" MaxLength="7" Nullable="false" />
+          <Property Name="VALOR_FACTURA" Type="money" />
+          <Property Name="FECHA_FACTURA" Type="datetime" />
+          <Property Name="FECHA_VENCIMIENTO" Type="datetime" />
+        </EntityType>
+        <EntityType Name="PROVEEDORES">
+          <Key>
+            <PropertyRef Name="CODIGO" />
+          </Key>
+          <Property Name="CODIGO" Type="varchar" MaxLength="7" Nullable="false" />
+          <Property Name="NOMBRES" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="APELLIDOS" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="DIRECCION" Type="varchar" MaxLength="35" Nullable="false" />
+          <Property Name="CIUDAD" Type="varchar" MaxLength="25" />
+          <Property Name="TELEFONO" Type="varchar" MaxLength="13" />
+        </EntityType>
+        <EntityType Name="USUARIOS">
+          <Key>
+            <PropertyRef Name="USUARIO" />
+          </Key>
+          <Property Name="USUARIO" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="CLAVE" Type="varchar" MaxLength="15" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view 'SCXPRAUDO.dbo.estado_de_cuentas' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="estado_de_cuentas">
+          <Key>
+            <PropertyRef Name="CODIGO" />
+            <PropertyRef Name="NOMBRES" />
+            <PropertyRef Name="APELLIDOS" />
+          </Key>
+          <Property Name="CODIGO" Type="varchar" MaxLength="7" Nullable="false" />
+          <Property Name="NOMBRES" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="APELLIDOS" Type="varchar" MaxLength="25" Nullable="false" />
+          <Property Name="MONTO" Type="money" />
+          <Property Name="PAGOS" Type="money" />
+          <Property Name="BALANCE" Type="money" />
+        </EntityType>
+        <Association Name="CHEQFACT">
+          <End Role="FACTURAS" Type="Self.FACTURAS" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CHEQUES" Type="Self.CHEQUES" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FACTURAS">
+              <PropertyRef Name="NUMERO_FACTURA" />
+            </Principal>
+            <Dependent Role="CHEQUES">
+              <PropertyRef Name="NUMERO_FACTURA" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FACTPROV">
+          <End Role="PROVEEDORES" Type="Self.PROVEEDORES" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FACTURAS" Type="Self.FACTURAS" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PROVEEDORES">
+              <PropertyRef Name="CODIGO" />
+            </Principal>
+            <Dependent Role="FACTURAS">
+              <PropertyRef Name="CODIGO" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SCXPRAUDOModelStoreContainer">
+          <EntitySet Name="CHEQUES" EntityType="Self.CHEQUES" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="FACTURAS" EntityType="Self.FACTURAS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="PROVEEDORES" EntityType="Self.PROVEEDORES" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="USUARIOS" EntityType="Self.USUARIOS" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="estado_de_cuentas" EntityType="Self.estado_de_cuentas" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [estado_de_cuentas].[CODIGO] AS [CODIGO], 
+    [estado_de_cuentas].[NOMBRES] AS [NOMBRES], 
+    [estado_de_cuentas].[APELLIDOS] AS [APELLIDOS], 
+    [estado_de_cuentas].[MONTO] AS [MONTO], 
+    [estado_de_cuentas].[PAGOS] AS [PAGOS], 
+    [estado_de_cuentas].[BALANCE] AS [BALANCE]
+    FROM [dbo].[estado_de_cuentas] AS [estado_de_cuentas]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="CHEQFACT" Association="Self.CHEQFACT">
+            <End Role="FACTURAS" EntitySet="FACTURAS" />
+            <End Role="CHEQUES" EntitySet="CHEQUES" />
+          </AssociationSet>
+          <AssociationSet Name="FACTPROV" Association="Self.FACTPROV">
+            <End Role="PROVEEDORES" EntitySet="PROVEEDORES" />
+            <End Role="FACTURAS" EntitySet="FACTURAS" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="SCXPRAUDOModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="CHEQUE">
+          <Key>
+            <PropertyRef Name="NUMERO_CHEQUE" />
+          </Key>
+          <Property Name="NUMERO_CHEQUE" Type="Int32" Nullable="false" />
+          <Property Name="NUMERO_FACTURA" Type="Int32" Nullable="false" />
+          <Property Name="VALOR_CHEQUE" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="FECHA_CHEQUE" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="FACTURA" Relationship="Self.CHEQFACT" FromRole="CHEQUES" ToRole="FACTURAS" />
+        </EntityType>
+        <EntityType Name="FACTURA">
+          <Key>
+            <PropertyRef Name="NUMERO_FACTURA" />
+          </Key>
+          <Property Name="NUMERO_FACTURA" Type="Int32" Nullable="false" />
+          <Property Name="CODIGO" Type="String" MaxLength="7" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="VALOR_FACTURA" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="FECHA_FACTURA" Type="DateTime" Precision="3" />
+          <Property Name="FECHA_VENCIMIENTO" Type="DateTime" Precision="3" />
+          <NavigationProperty Name="CHEQUES" Relationship="Self.CHEQFACT" FromRole="FACTURAS" ToRole="CHEQUES" />
+          <NavigationProperty Name="PROVEEDORE" Relationship="Self.FACTPROV" FromRole="FACTURAS" ToRole="PROVEEDORES" />
+        </EntityType>
+        <EntityType Name="PROVEEDORE">
+          <Key>
+            <PropertyRef Name="CODIGO" />
+          </Key>
+          <Property Name="CODIGO" Type="String" MaxLength="7" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="NOMBRES" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="APELLIDOS" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="DIRECCION" Type="String" MaxLength="35" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CIUDAD" Type="String" MaxLength="25" FixedLength="false" Unicode="false" />
+          <Property Name="TELEFONO" Type="String" MaxLength="13" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="FACTURAS" Relationship="Self.FACTPROV" FromRole="PROVEEDORES" ToRole="FACTURAS" />
+        </EntityType>
+        <EntityType Name="USUARIO">
+          <Key>
+            <PropertyRef Name="USUARIO1" />
+          </Key>
+          <Property Name="USUARIO1" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="CLAVE" Type="String" MaxLength="15" FixedLength="false" Unicode="false" />
+        </EntityType>
+        <EntityType Name="estado_de_cuentas">
+          <Key>
+            <PropertyRef Name="CODIGO" />
+            <PropertyRef Name="NOMBRES" />
+            <PropertyRef Name="APELLIDOS" />
+          </Key>
+          <Property Name="CODIGO" Type="String" MaxLength="7" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="NOMBRES" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="APELLIDOS" Type="String" MaxLength="25" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="MONTO" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="PAGOS" Type="Decimal" Precision="19" Scale="4" />
+          <Property Name="BALANCE" Type="Decimal" Precision="19" Scale="4" />
+        </EntityType>
+        <Association Name="CHEQFACT">
+          <End Role="FACTURAS" Type="Self.FACTURA" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="CHEQUES" Type="Self.CHEQUE" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="FACTURAS">
+              <PropertyRef Name="NUMERO_FACTURA" />
+            </Principal>
+            <Dependent Role="CHEQUES">
+              <PropertyRef Name="NUMERO_FACTURA" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FACTPROV">
+          <End Role="PROVEEDORES" Type="Self.PROVEEDORE" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="FACTURAS" Type="Self.FACTURA" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="PROVEEDORES">
+              <PropertyRef Name="CODIGO" />
+            </Principal>
+            <Dependent Role="FACTURAS">
+              <PropertyRef Name="CODIGO" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="SCXPRAUDOEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="CHEQUES" EntityType="Self.CHEQUE" />
+          <EntitySet Name="FACTURAS" EntityType="Self.FACTURA" />
+          <EntitySet Name="PROVEEDORES" EntityType="Self.PROVEEDORE" />
+          <EntitySet Name="USUARIOS" EntityType="Self.USUARIO" />
+          <EntitySet Name="estado_de_cuentas" EntityType="Self.estado_de_cuentas" />
+          <AssociationSet Name="CHEQFACT" Association="Self.CHEQFACT">
+            <End Role="FACTURAS" EntitySet="FACTURAS" />
+            <End Role="CHEQUES" EntitySet="CHEQUES" />
+          </AssociationSet>
+          <AssociationSet Name="FACTPROV" Association="Self.FACTPROV">
+            <End Role="PROVEEDORES" EntitySet="PROVEEDORES" />
+            <End Role="FACTURAS" EntitySet="FACTURAS" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="SCXPRAUDOModelStoreContainer" CdmEntityContainer="SCXPRAUDOEntities">
+          <EntitySetMapping Name="CHEQUES">
+            <EntityTypeMapping TypeName="SCXPRAUDOModel.CHEQUE">
+              <MappingFragment StoreEntitySet="CHEQUES">
+                <ScalarProperty Name="NUMERO_CHEQUE" ColumnName="NUMERO_CHEQUE" />
+                <ScalarProperty Name="NUMERO_FACTURA" ColumnName="NUMERO_FACTURA" />
+                <ScalarProperty Name="VALOR_CHEQUE" ColumnName="VALOR_CHEQUE" />
+                <ScalarProperty Name="FECHA_CHEQUE" ColumnName="FECHA_CHEQUE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="FACTURAS">
+            <EntityTypeMapping TypeName="SCXPRAUDOModel.FACTURA">
+              <MappingFragment StoreEntitySet="FACTURAS">
+                <ScalarProperty Name="NUMERO_FACTURA" ColumnName="NUMERO_FACTURA" />
+                <ScalarProperty Name="CODIGO" ColumnName="CODIGO" />
+                <ScalarProperty Name="VALOR_FACTURA" ColumnName="VALOR_FACTURA" />
+                <ScalarProperty Name="FECHA_FACTURA" ColumnName="FECHA_FACTURA" />
+                <ScalarProperty Name="FECHA_VENCIMIENTO" ColumnName="FECHA_VENCIMIENTO" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="PROVEEDORES">
+            <EntityTypeMapping TypeName="SCXPRAUDOModel.PROVEEDORE">
+              <MappingFragment StoreEntitySet="PROVEEDORES">
+                <ScalarProperty Name="CODIGO" ColumnName="CODIGO" />
+                <ScalarProperty Name="NOMBRES" ColumnName="NOMBRES" />
+                <ScalarProperty Name="APELLIDOS" ColumnName="APELLIDOS" />
+                <ScalarProperty Name="DIRECCION" ColumnName="DIRECCION" />
+                <ScalarProperty Name="CIUDAD" ColumnName="CIUDAD" />
+                <ScalarProperty Name="TELEFONO" ColumnName="TELEFONO" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="USUARIOS">
+            <EntityTypeMapping TypeName="SCXPRAUDOModel.USUARIO">
+              <MappingFragment StoreEntitySet="USUARIOS">
+                <ScalarProperty Name="USUARIO1" ColumnName="USUARIO" />
+                <ScalarProperty Name="CLAVE" ColumnName="CLAVE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="estado_de_cuentas">
+            <EntityTypeMapping TypeName="SCXPRAUDOModel.estado_de_cuentas">
+              <MappingFragment StoreEntitySet="estado_de_cuentas">
+                <ScalarProperty Name="CODIGO" ColumnName="CODIGO" />
+                <ScalarProperty Name="NOMBRES" ColumnName="NOMBRES" />
+                <ScalarProperty Name="APELLIDOS" ColumnName="APELLIDOS" />
+                <ScalarProperty Name="MONTO" ColumnName="MONTO" />
+                <ScalarProperty Name="PAGOS" ColumnName="PAGOS" />
+                <ScalarProperty Name="BALANCE" ColumnName="BALANCE" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>
